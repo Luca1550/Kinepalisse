@@ -1,0 +1,6 @@
+@Kinepalisse.Api_HostAddress = http://localhost:5027
+
+GET {{Kinepalisse.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
