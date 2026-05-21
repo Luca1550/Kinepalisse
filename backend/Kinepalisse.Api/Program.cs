@@ -1,23 +1,30 @@
+using Dapper;
+using Kinepalisse.Api.Data;
+using Kinepalisse.Api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddSingleton<DbConnectionFactory>();
+builder.Services.AddScoped<FilmService>();
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(o =>
+    o.AddPolicy("Front", p => p
+        .WithOrigins("http://localhost:4200")
+        .AllowAnyHeader()
+        .AllowAnyMethod()));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+// Dapper : mappe automatiquement les colonnes snake_case vers les propriétés PascalCase
+DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseAuthorization();
-
+app.UseCors("Front");
 app.MapControllers();
-
 app.Run();
