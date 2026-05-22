@@ -1,0 +1,85 @@
+using Dapper;
+using Kinepalisse.Api.Data;
+using MySqlConnector;
+
+namespace Kinepalisse.Api.Services;
+
+public class ReservationService
+{
+    private readonly DbConnectionFactory _db;
+    public ReservationService(DbConnectionFactory db) => _db = db;
+
+    private record SeanceInfo(DateTime DateHeure, int Capacite, decimal Prix);
+
+    public async Task<(int idReservation, decimal montant)> ReserverAsync(
+        int idClient, int idSeance, int nbPlaces)
+    {
+        using var conn = (MySqlConnection)await _db.CreateOpenConnectionAsync();
+
+        // 1. Récupérer infos séance + tarif + capacité en UNE requête
+        var info = await conn.QuerySingleOrDefaultAsync<SeanceInfo>(@"
+            SELECT s.date_heure AS DateHeure,
+                   sa.capacite  AS Capacite,
+                   t.prix       AS Prix
+            FROM Seance s
+            JOIN Salle sa ON sa.id_salle = s.id_salle
+            JOIN Tarif t  ON t.id_tarif  = s.id_tarif
+            WHERE s.id_seance = @idSeance",
+            new { idSeance });
+        if (info == null) throw new Exception("Séance introuvable.");
+
+        // 2. RG-05 : séance pas déjà passée
+        if (info.DateHeure <= DateTime.UtcNow)
+            throw new Exception("Cette séance a déjà commencé.");
+
+        // 3. RG-04 : capacité disponible ?
+        var dejaReserve = await conn.ExecuteScalarAsync<int>(@"
+            SELECT COALESCE(SUM(nb_places), 0)
+            FROM Reservation
+            WHERE id_seance = @idSeance AND statut = 'Confirmee'",
+            new { idSeance });
+        if (dejaReserve + nbPlaces > info.Capacite)
+            throw new Exception("Places insuffisantes.");
+
+        // 4. RG-10 : montant calculé côté serveur, jamais depuis le client
+        decimal montant = nbPlaces * info.Prix;
+
+        // 5. Transaction : INSERT Reservation + INSERT Paiement → tout ou rien (Atomicité ACID)
+        using var tx = await conn.BeginTransactionAsync();
+        try
+        {
+            var idResa = await conn.ExecuteScalarAsync<int>(@"
+                INSERT INTO Reservation (id_client, id_seance, nb_places, date_reservation, statut)
+                VALUES (@idClient, @idSeance, @nbPlaces, UTC_TIMESTAMP(), 'Confirmee');
+                SELECT LAST_INSERT_ID();",
+                new { idClient, idSeance, nbPlaces },
+                transaction: tx);
+
+            await conn.ExecuteAsync(@"
+                INSERT INTO Paiement (id_reservation, montant, mode_paiement, statut, date_paiement)
+                VALUES (@idResa, @montant, 'CarteEnLigne', 'Paye', UTC_TIMESTAMP());",
+                new { idResa, montant },
+                transaction: tx);
+
+            await tx.CommitAsync();
+            return (idResa, montant);
+        }
+        catch
+        {
+            await tx.RollbackAsync();
+            throw;
+        }
+    }
+
+    // Depuis l'id Utilisateur extrait du JWT, on retrouve l'idClient puis on délègue
+    public async Task<(int idReservation, decimal montant)> ReserverPourUtilisateurAsync(
+        int idUser, int idSeance, int nbPlaces)
+    {
+        using var conn = await _db.CreateOpenConnectionAsync();
+        var idClient = await conn.ExecuteScalarAsync<int?>(
+            "SELECT id_client FROM Client WHERE id_utilisateur = @idUser",
+            new { idUser });
+        if (idClient == null) throw new Exception("Compte client introuvable.");
+        return await ReserverAsync(idClient.Value, idSeance, nbPlaces);
+    }
+}

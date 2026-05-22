@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { roleGuard } from './core/auth/role.guard';
+import { AuthService } from './core/auth/auth.service';
 
 export const routes: Routes = [
   {
@@ -22,5 +25,12 @@ export const routes: Routes = [
     path: 'admin/planning',
     canActivate: [roleGuard('Admin')],
     loadComponent: () => import('./features/admin/planning').then(m => m.PlanningComponent)
+  },
+  {
+    path: 'reservation/:idSeance',
+    canActivate: [() => inject(AuthService).user() != null
+      ? true
+      : inject(Router).createUrlTree(['/auth/login'])],
+    loadComponent: () => import('./features/reservation/tunnel').then(m => m.TunnelComponent)
   },
 ];

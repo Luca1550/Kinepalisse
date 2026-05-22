@@ -1,0 +1,66 @@
+<h1>Réservation</h1>
+
+@switch (etape()) {
+  @case (1) {
+    <div class="etape">
+      <h2>1. Confirmation de la séance</h2>
+      @if (dispo(); as d) {
+        <p>Places disponibles : <strong>{{ d.restant }}</strong> / {{ d.capacite }}</p>
+        @if (d.restant === 0) {
+          <p class="erreur">Cette séance est complète.</p>
+        } @else {
+          <button (click)="etape.set(2)">Suivant</button>
+        }
+      } @else {
+        <p>Chargement…</p>
+      }
+    </div>
+  }
+
+  @case (2) {
+    <div class="etape">
+      <h2>2. Nombre de places</h2>
+      <label>
+        Nombre de places
+        <input type="number" min="1" max="10"
+               [value]="nbPlaces()"
+               (input)="setNbPlaces($event)" />
+      </label>
+      <p class="info">Le montant exact sera calculé à la confirmation.</p>
+      <button (click)="etape.set(3)" [disabled]="!peutSuivant()">Suivant</button>
+    </div>
+  }
+
+  @case (3) {
+    <div class="etape">
+      <h2>3. Paiement (simulé)</h2>
+      <form [formGroup]="cb" (ngSubmit)="payer()">
+        <label>
+          Numéro de carte (16 chiffres)
+          <input formControlName="numero" placeholder="1234567890123456" maxlength="16" />
+        </label>
+        <label>
+          Date d'expiration
+          <input formControlName="exp" placeholder="MM/AA" maxlength="5" />
+        </label>
+        <label>
+          CVV
+          <input formControlName="cvv" placeholder="123" maxlength="3" />
+        </label>
+        <button type="submit" [disabled]="cb.invalid">Confirmer le paiement</button>
+      </form>
+      @if (erreur()) {
+        <p class="erreur">{{ erreur() }}</p>
+      }
+    </div>
+  }
+
+  @case (4) {
+    <div class="etape confirmation">
+      <h2>4. Réservation confirmée</h2>
+      <p>Réservation n° <strong>{{ confirmation()?.idReservation }}</strong></p>
+      <p>Montant débité : <strong>{{ confirmation()?.montant | currency:'EUR' }}</strong></p>
+      <a routerLink="/">Retour au catalogue</a>
+    </div>
+  }
+}

@@ -3,6 +3,9 @@
 -- =============================================================================
 
 
+-- Force l'encodage utf8mb4 pour cette session cliente (accents, emojis)
+SET NAMES utf8mb4;
+
 -- Sécurité : si on relance le script, on repart de zéro proprement.
 -- (Désactive temporairement les contraintes pour pouvoir DROP dans n'importe quel ordre.)
 SET FOREIGN_KEY_CHECKS = 0;

@@ -1,3 +1,6 @@
+-- Force l'encodage utf8mb4 pour cette session cliente (accents, emojis)
+SET NAMES utf8mb4;
+
 USE kinepalisse;
 
 -- Genres (id 1-5)
