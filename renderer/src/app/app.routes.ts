@@ -9,4 +9,12 @@ export const routes: Routes = [
     path: 'films/:id',
     loadComponent: () => import('./features/catalogue/film-detail').then(m => m.FilmDetailComponent)
   },
+  {
+    path: 'auth/login',
+    loadComponent: () => import('./features/auth/login').then(m => m.LoginComponent)
+  },
+  {
+    path: 'auth/register',
+    loadComponent: () => import('./features/auth/register').then(m => m.RegisterComponent)
+  },
 ];
