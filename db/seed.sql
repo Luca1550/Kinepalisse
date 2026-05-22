@@ -78,11 +78,11 @@ INSERT INTO Salle (nom_salle, capacite) VALUES
   ('Salle 2', 120),
   ('Salle 3',  50);
 
--- Tarifs
+-- Tarifs : modèle événementiel (pas de tarif catégoriel enfant/étudiant/senior)
 INSERT INTO Tarif (type_tarif, prix) VALUES
-  ('Plein',   10.00),
-  ('Réduit',   8.00),
-  ('Enfant',   6.00);
+  ('Normal',              10.00),
+  ('Promotion -20%',       8.00),
+  ('Fête du Cinéma -50%',  5.00);
 
 -- Séances dans les prochains jours (id_film: 1=Inception, 2=Interstellar, 3=Ratatouille, 4=Dune)
 INSERT INTO Seance (date_heure, id_film, id_salle, id_tarif) VALUES
