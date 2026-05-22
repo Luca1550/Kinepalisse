@@ -22,7 +22,7 @@ public class AuthService
     // INSCRIPTION (crée un Utilisateur "Client" + le Client lié)
     public async Task<int> RegisterAsync(string nom, string prenom, string email, string motDePasse)
     {
-        using var conn = await _db.CreateOpenConnectionAsync();
+        using var conn = (MySqlConnector.MySqlConnection)await _db.CreateOpenConnectionAsync();
 
         // 1. Email déjà pris ?
         var existe = await conn.ExecuteScalarAsync<int>(
@@ -33,21 +33,30 @@ public class AuthService
         // 2. Hacher (BCrypt gère le salt automatiquement)
         var hash = BCrypt.Net.BCrypt.HashPassword(motDePasse, workFactor: 11);
 
-        // 3. Insérer l'Utilisateur + récupérer l'id généré
-        var idUser = await conn.ExecuteScalarAsync<int>(@"
-            INSERT INTO Utilisateur (email, mot_de_passe_hash, role, date_creation)
-            VALUES (@email, @hash, 'Client', UTC_TIMESTAMP());
-            SELECT LAST_INSERT_ID();",
-            new { email, hash });
+        // 3. Transaction : Utilisateur + Client ensemble ou pas du tout
+        using var tx = await conn.BeginTransactionAsync();
+        try
+        {
+            var idUser = await conn.ExecuteScalarAsync<int>(@"
+                INSERT INTO Utilisateur (email, mot_de_passe_hash, role, date_creation)
+                VALUES (@email, @hash, 'Client', UTC_TIMESTAMP());
+                SELECT LAST_INSERT_ID();",
+                new { email, hash }, transaction: tx);
 
-        // 4. Insérer le Client lié
-        var idClient = await conn.ExecuteScalarAsync<int>(@"
-            INSERT INTO Client (nom, prenom, email, id_utilisateur)
-            VALUES (@nom, @prenom, @email, @idUser);
-            SELECT LAST_INSERT_ID();",
-            new { nom, prenom, email, idUser });
+            var idClient = await conn.ExecuteScalarAsync<int>(@"
+                INSERT INTO Client (nom, prenom, email, id_utilisateur)
+                VALUES (@nom, @prenom, @email, @idUser);
+                SELECT LAST_INSERT_ID();",
+                new { nom, prenom, email, idUser }, transaction: tx);
 
-        return idClient;
+            await tx.CommitAsync();
+            return idClient;
+        }
+        catch
+        {
+            await tx.RollbackAsync();
+            throw;
+        }
     }
 
     // CONNEXION (renvoie le JWT en cas de succès)

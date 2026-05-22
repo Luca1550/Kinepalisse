@@ -26,15 +26,29 @@ public class FilmsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Creer([FromBody] CreateFilmDto dto)
     {
-        var id = await _service.CreerAsync(dto);
-        return CreatedAtAction(nameof(Recuperer), new { id }, new { idFilm = id });
+        try
+        {
+            var id = await _service.CreerAsync(dto);
+            return CreatedAtAction(nameof(Recuperer), new { id }, new { idFilm = id });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Supprimer(int id)
     {
-        await _service.SupprimerAsync(id);
-        return NoContent();
+        try
+        {
+            await _service.SupprimerAsync(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 }
