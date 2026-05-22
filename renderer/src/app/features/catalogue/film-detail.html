@@ -1,0 +1,26 @@
+@if (film(); as f) {
+  <h1>{{ f.titre }}</h1>
+  <p><strong>Durée :</strong> {{ f.duree }} min</p>
+  @if (f.realisateur) { <p><strong>Réalisateur :</strong> {{ f.realisateur }}</p> }
+  @if (f.genres.length) { <p><strong>Genres :</strong> {{ f.genres.join(', ') }}</p> }
+  @if (f.acteurs.length) { <p><strong>Avec :</strong> {{ f.acteurs.join(', ') }}</p> }
+  @if (f.synopsis) { <p>{{ f.synopsis }}</p> }
+
+  @if (seances().length) {
+    <h3>Séances à venir</h3>
+    <ul>
+      @for (s of seances(); track s.idSeance) {
+        <li>
+          {{ s.dateHeure | date:'EEE dd/MM HH:mm' }} —
+          {{ s.nomSalle }} —
+          {{ s.typeTarif }} {{ s.prix }}€
+          <a [routerLink]="['/reservation', s.idSeance]">Réserver</a>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>Aucune séance à venir.</p>
+  }
+} @else {
+  <p>Chargement…</p>
+}

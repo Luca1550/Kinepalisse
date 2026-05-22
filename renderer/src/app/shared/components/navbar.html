@@ -1,0 +1,13 @@
+<nav>
+  <a routerLink="/">Catalogue</a>
+  @if (auth.user(); as u) {
+    @if (u.role === 'Admin') {
+      <a routerLink="/admin/planning">Planning</a>
+    }
+    <span>Connecté : {{ u.email }} ({{ u.role }})</span>
+    <button (click)="auth.logout()">Déconnexion</button>
+  } @else {
+    <a routerLink="/auth/login">Connexion</a>
+    <a routerLink="/auth/register">S'inscrire</a>
+  }
+</nav>

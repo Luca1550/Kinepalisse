@@ -71,3 +71,22 @@ INSERT INTO Film_Acteur (id_film, id_acteur) VALUES
   (11, 6),            -- Blade Runner 2049 : Gosling
   (14, 7),            -- Oppenheimer : Murphy
   (15, 6);            -- La La Land : Gosling
+
+-- Salles
+INSERT INTO Salle (nom_salle, capacite) VALUES
+  ('Salle 1',  80),
+  ('Salle 2', 120),
+  ('Salle 3',  50);
+
+-- Tarifs
+INSERT INTO Tarif (type_tarif, prix) VALUES
+  ('Plein',   10.00),
+  ('Réduit',   8.00),
+  ('Enfant',   6.00);
+
+-- Séances dans les prochains jours (id_film: 1=Inception, 2=Interstellar, 3=Ratatouille, 4=Dune)
+INSERT INTO Seance (date_heure, id_film, id_salle, id_tarif) VALUES
+  (DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 DAY),                        1, 1, 1),
+  (DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 DAY) + INTERVAL 4 HOUR,     2, 1, 1),
+  (DATE_ADD(UTC_TIMESTAMP(), INTERVAL 2 DAY),                        3, 2, 3),
+  (DATE_ADD(UTC_TIMESTAMP(), INTERVAL 3 DAY),                        4, 3, 1);

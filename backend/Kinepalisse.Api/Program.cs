@@ -15,6 +15,9 @@ builder.Services.AddSingleton<DbConnectionFactory>();
 // AddScoped = .NET crée une instance par requête HTTP
 builder.Services.AddScoped<FilmService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<SalleService>();
+builder.Services.AddScoped<TarifService>();
+builder.Services.AddScoped<SeanceService>();
 
 var jwtConfig = builder.Configuration.GetSection("Jwt");
 

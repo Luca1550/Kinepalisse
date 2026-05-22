@@ -6,20 +6,8 @@ import { AuthService } from '../../core/auth/auth.service';
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink],
-  template: `
-    <h1>Connexion</h1>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <label>Email
-        <input type="email" formControlName="email" />
-      </label>
-      <label>Mot de passe
-        <input type="password" formControlName="motDePasse" />
-      </label>
-      <button type="submit" [disabled]="form.invalid">Se connecter</button>
-    </form>
-    @if (erreur()) { <p style="color:red">{{ erreur() }}</p> }
-    <p>Pas de compte ? <a routerLink="/auth/register">S'inscrire</a></p>
-  `,
+  templateUrl: './login.html',
+  styleUrl: './login.css',
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);

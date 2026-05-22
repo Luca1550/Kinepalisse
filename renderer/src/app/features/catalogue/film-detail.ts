@@ -1,32 +1,38 @@
 import { Component, input, inject, effect, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { FilmService } from './film.service';
 import { FilmDetail } from '../../core/models/film.model';
 
+interface SeanceDuFilm {
+  idSeance: number;
+  dateHeure: string;
+  nomSalle: string;
+  idSalle: number;
+  typeTarif: string;
+  prix: number;
+}
+
 @Component({
   selector: 'app-film-detail',
-  template: `
-    @if (film(); as f) {
-      <h1>{{ f.titre }}</h1>
-      <p><strong>Durée :</strong> {{ f.duree }} min</p>
-      @if (f.realisateur) { <p><strong>Réalisateur :</strong> {{ f.realisateur }}</p> }
-      @if (f.genres.length) { <p><strong>Genres :</strong> {{ f.genres.join(', ') }}</p> }
-      @if (f.acteurs.length) { <p><strong>Avec :</strong> {{ f.acteurs.join(', ') }}</p> }
-      @if (f.synopsis) { <p>{{ f.synopsis }}</p> }
-    } @else {
-      <p>Chargement…</p>
-    }
-  `,
+  imports: [DatePipe, RouterLink],
+  templateUrl: './film-detail.html',
 })
 export class FilmDetailComponent {
   id = input.required<string>();
 
   private filmService = inject(FilmService);
-  film = signal<FilmDetail | null>(null);
+  private http = inject(HttpClient);
+  film    = signal<FilmDetail | null>(null);
+  seances = signal<SeanceDuFilm[]>([]);
 
   constructor() {
     effect(() => {
       const n = Number(this.id());
       this.filmService.recuperer(n).subscribe(f => this.film.set(f));
+      this.http.get<SeanceDuFilm[]>(`/api/films/${n}/seances`)
+        .subscribe(s => this.seances.set(s));
     });
   }
 }

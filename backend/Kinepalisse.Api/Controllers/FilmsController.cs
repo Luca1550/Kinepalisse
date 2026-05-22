@@ -10,7 +10,12 @@ namespace Kinepalisse.Api.Controllers;
 public class FilmsController : ControllerBase
 {
     private readonly FilmService _service;
-    public FilmsController(FilmService service) => _service = service;
+    private readonly SeanceService _seances;
+    public FilmsController(FilmService service, SeanceService seances)
+    {
+        _service = service;
+        _seances = seances;
+    }
 
     [HttpGet]
     public Task<IEnumerable<FilmListDto>> Lister() => _service.ListerAsync();
@@ -51,4 +56,8 @@ public class FilmsController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    [HttpGet("{id}/seances")]
+    public Task<IEnumerable<SeanceDuFilmDto>> SeancesDuFilm(int id)
+        => _seances.ListerParFilmAsync(id);
 }

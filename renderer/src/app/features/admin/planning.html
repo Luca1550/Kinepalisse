@@ -1,0 +1,31 @@
+<h1>Planifier une séance</h1>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <label>Film
+    <select formControlName="idFilm">
+      @for (f of films(); track f.idFilm) {
+        <option [value]="f.idFilm">{{ f.titre }}</option>
+      }
+    </select>
+  </label>
+  <label>Salle
+    <select formControlName="idSalle">
+      @for (s of salles(); track s.idSalle) {
+        <option [value]="s.idSalle">{{ s.nomSalle }} ({{ s.capacite }} places)</option>
+      }
+    </select>
+  </label>
+  <label>Tarif
+    <select formControlName="idTarif">
+      @for (t of tarifs(); track t.idTarif) {
+        <option [value]="t.idTarif">{{ t.typeTarif }} ({{ t.prix }}€)</option>
+      }
+    </select>
+  </label>
+  <label>Date et heure
+    <input type="datetime-local" formControlName="dateHeure" />
+  </label>
+  <button type="submit" [disabled]="form.invalid">Planifier</button>
+</form>
+@if (message()) {
+  <p [style.color]="erreur() ? 'red' : 'green'">{{ message() }}</p>
+}

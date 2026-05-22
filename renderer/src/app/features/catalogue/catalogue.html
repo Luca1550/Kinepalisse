@@ -1,0 +1,14 @@
+<h1>Catalogue</h1>
+<div class="grille">
+  @for (film of films(); track film.idFilm) {
+    <a class="carte" [routerLink]="['/films', film.idFilm]">
+      @if (film.afficheUrl) {
+        <img [src]="film.afficheUrl" [alt]="film.titre" />
+      }
+      <h3>{{ film.titre }}</h3>
+      <p>{{ film.duree }} min</p>
+    </a>
+  } @empty {
+    <p>Aucun film disponible pour le moment.</p>
+  }
+</div>
