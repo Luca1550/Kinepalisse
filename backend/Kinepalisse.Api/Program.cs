@@ -76,6 +76,8 @@ var app = builder.Build();
 
 // Dapper : mappe automatiquement les colonnes snake_case vers les propriétés PascalCase
 DefaultTypeMap.MatchNamesWithUnderscores = true;
+// MySQL renvoie les dates comme DateTime ; ce handler convertit vers DateOnly
+SqlMapper.AddTypeHandler(new Kinepalisse.Api.Data.DateOnlyTypeHandler());
 
 app.UseSwagger();
 app.UseSwaggerUI();

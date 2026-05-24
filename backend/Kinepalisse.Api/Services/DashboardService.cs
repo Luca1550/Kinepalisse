@@ -8,7 +8,7 @@ public class DashboardService
     private readonly DbConnectionFactory _db;
     public DashboardService(DbConnectionFactory db) => _db = db;
 
-    public record DashboardDto(int NbFilms, int NbSeancesAVenir, int NbReservationsJour, decimal TauxRemplissage);
+    public record DashboardDto(long NbFilms, long NbSeancesAVenir, long NbReservationsJour, decimal TauxRemplissage);
 
     public async Task<DashboardDto> GetAsync()
     {
