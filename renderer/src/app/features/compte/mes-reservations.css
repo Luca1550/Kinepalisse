@@ -1,0 +1,57 @@
+.liste-resas {
+  list-style: none;
+  padding: 0;
+  max-width: 720px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.resa-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.film {
+  font-weight: bold;
+  flex: 2;
+}
+
+.date, .places {
+  flex: 1;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.statut {
+  font-size: 0.85rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: #d4edda;
+  color: #155724;
+}
+
+.statut.annulee {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.btn-annuler {
+  margin-left: auto;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.vide {
+  color: #888;
+  font-style: italic;
+}

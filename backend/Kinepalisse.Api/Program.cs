@@ -19,6 +19,7 @@ builder.Services.AddScoped<SalleService>();
 builder.Services.AddScoped<TarifService>();
 builder.Services.AddScoped<SeanceService>();
 builder.Services.AddScoped<ReservationService>();
+builder.Services.AddScoped<ClientService>();
 
 var jwtConfig = builder.Configuration.GetSection("Jwt");
 

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Kinepalisse.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,24 @@ public class ReservationsController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    [Authorize]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Annuler(int id)
+    {
+        try
+        {
+            var idUser = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                ?? User.FindFirst("sub")!.Value);
+            var role = User.FindFirst(ClaimTypes.Role)?.Value ?? "";
+            await _service.AnnulerAsync(id, idUser, role);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }
 
-public record ReserverDto(int IdSeance, int NbPlaces);
+public record ReserverDto(int IdSeance, [Range(1, 10)] int NbPlaces);

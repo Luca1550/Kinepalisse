@@ -71,6 +71,57 @@ public class ReservationService
         }
     }
 
+    private record ResaInfo(int IdUtilisateur, DateTime DateHeureSeance);
+
+    public async Task AnnulerAsync(int idReservation, int idUserCourant, string roleCourant)
+    {
+        using var conn = (MySqlConnection)await _db.CreateOpenConnectionAsync();
+
+        // 1. Récupérer propriétaire + date de la séance en une requête
+        var info = await conn.QuerySingleOrDefaultAsync<ResaInfo>(@"
+            SELECT c.id_utilisateur AS IdUtilisateur,
+                   s.date_heure      AS DateHeureSeance
+            FROM Reservation r
+            JOIN Client c ON c.id_client = r.id_client
+            JOIN Seance s ON s.id_seance = r.id_seance
+            WHERE r.id_reservation = @idReservation",
+            new { idReservation });
+        if (info == null) throw new Exception("Réservation introuvable.");
+
+        // 2. RG-07 : un client ne peut annuler que les siennes (Admin/Guichetier passent)
+        bool estProprietaire = info.IdUtilisateur == idUserCourant;
+        if (!estProprietaire && roleCourant != "Admin" && roleCourant != "Guichetier")
+            throw new Exception("Accès refusé.");
+
+        // 3. RG-06 : règle des 2 h (uniquement pour le client propriétaire)
+        if (estProprietaire && roleCourant == "Client")
+        {
+            var delai = info.DateHeureSeance - DateTime.UtcNow;
+            if (delai <= TimeSpan.FromHours(2))
+                throw new Exception("Annulation impossible à moins de 2h.");
+        }
+
+        // 4. Soft delete + remboursement paiement (transaction)
+        using var tx = await conn.BeginTransactionAsync();
+        try
+        {
+            await conn.ExecuteAsync(
+                "UPDATE Reservation SET statut = 'Annulee' WHERE id_reservation = @idReservation",
+                new { idReservation }, transaction: tx);
+
+            await conn.ExecuteAsync(
+                "UPDATE Paiement SET statut = 'Rembourse' WHERE id_reservation = @idReservation",
+                new { idReservation }, transaction: tx);
+
+            await tx.CommitAsync();
+        }
+        catch
+        {
+            await tx.RollbackAsync();
+            throw;
+        }
+    }
+
     // Depuis l'id Utilisateur extrait du JWT, on retrouve l'idClient puis on délègue
     public async Task<(int idReservation, decimal montant)> ReserverPourUtilisateurAsync(
         int idUser, int idSeance, int nbPlaces)

@@ -1,6 +1,9 @@
 <nav>
   <a routerLink="/">Catalogue</a>
   @if (auth.user(); as u) {
+    @if (u.role === 'Client') {
+      <a routerLink="/compte">Mon compte</a>
+    }
     @if (u.role === 'Admin') {
       <a routerLink="/admin/planning">Planning</a>
     }

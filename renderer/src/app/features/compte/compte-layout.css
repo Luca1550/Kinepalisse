@@ -1,0 +1,28 @@
+.compte-container {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem;
+}
+
+.compte-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 160px;
+}
+
+.compte-nav a {
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 4px;
+}
+
+.compte-nav a.active {
+  background: #e0e0e0;
+  font-weight: bold;
+}
+
+.compte-content {
+  flex: 1;
+}

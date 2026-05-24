@@ -8,6 +8,7 @@
         <p>Places disponibles : <strong>{{ d.restant }}</strong> / {{ d.capacite }}</p>
         @if (d.restant === 0) {
           <p class="erreur">Cette séance est complète.</p>
+          <a routerLink="/">Retour au catalogue</a>
         } @else {
           <button (click)="etape.set(2)">Suivant</button>
         }

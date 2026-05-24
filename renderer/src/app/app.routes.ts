@@ -33,4 +33,20 @@ export const routes: Routes = [
       : inject(Router).createUrlTree(['/auth/login'])],
     loadComponent: () => import('./features/reservation/tunnel').then(m => m.TunnelComponent)
   },
+  {
+    path: 'compte',
+    canActivate: [() => inject(AuthService).hasRole('Client') ? true : inject(Router).createUrlTree(['/auth/login'])],
+    loadComponent: () => import('./features/compte/compte-layout').then(m => m.CompteLayoutComponent),
+    children: [
+      { path: '', redirectTo: 'profil', pathMatch: 'full' },
+      {
+        path: 'profil',
+        loadComponent: () => import('./features/compte/profil').then(m => m.ProfilComponent)
+      },
+      {
+        path: 'reservations',
+        loadComponent: () => import('./features/compte/mes-reservations').then(m => m.MesReservationsComponent)
+      },
+    ]
+  },
 ];

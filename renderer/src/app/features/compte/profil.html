@@ -1,0 +1,24 @@
+<h2>Mon profil</h2>
+
+@if (form) {
+  <form [formGroup]="form!" (ngSubmit)="save()" class="profil-form">
+    <label>
+      Nom
+      <input formControlName="nom" placeholder="Nom" />
+    </label>
+    <label>
+      Prénom
+      <input formControlName="prenom" placeholder="Prénom" />
+    </label>
+    <label>
+      Téléphone
+      <input formControlName="telephone" placeholder="Téléphone" />
+    </label>
+    <button type="submit" [disabled]="form!.invalid">Enregistrer</button>
+    @if (ok()) {
+      <p class="succes">Profil mis à jour.</p>
+    }
+  </form>
+} @else {
+  <p>Chargement…</p>
+}

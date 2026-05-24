@@ -1,0 +1,17 @@
+<h1>Mes réservations</h1>
+
+<ul class="liste-resas">
+  @for (r of resas(); track r.idReservation) {
+    <li class="resa-item">
+      <span class="film">{{ r.filmTitre }}</span>
+      <span class="date">{{ r.dateHeure | date:'EEE dd/MM/yyyy HH:mm' }}</span>
+      <span class="places">{{ r.nbPlaces }} place(s)</span>
+      <span class="statut" [class.annulee]="r.statut === 'Annulee'">{{ r.statut }}</span>
+      @if (peutAnnuler(r)) {
+        <button class="btn-annuler" (click)="annuler(r.idReservation)">Annuler</button>
+      }
+    </li>
+  } @empty {
+    <li class="vide">Aucune réservation.</li>
+  }
+</ul>
