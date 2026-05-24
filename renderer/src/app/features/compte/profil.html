@@ -1,7 +1,7 @@
 <h2>Mon profil</h2>
 
-@if (form) {
-  <form [formGroup]="form!" (ngSubmit)="save()" class="profil-form">
+@if (form(); as f) {
+  <form [formGroup]="f" (ngSubmit)="save()" class="profil-form">
     <label>
       Nom
       <input formControlName="nom" placeholder="Nom" />
@@ -14,7 +14,7 @@
       Téléphone
       <input formControlName="telephone" placeholder="Téléphone" />
     </label>
-    <button type="submit" [disabled]="form!.invalid">Enregistrer</button>
+    <button type="submit" [disabled]="f.invalid">Enregistrer</button>
     @if (ok()) {
       <p class="succes">Profil mis à jour.</p>
     }

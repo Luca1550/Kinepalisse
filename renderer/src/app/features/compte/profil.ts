@@ -12,22 +12,23 @@ export class ProfilComponent {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
 
-  form: FormGroup | null = null;
+  form = signal<FormGroup | null>(null);
   ok = signal(false);
 
   constructor() {
     this.http.get<any>('/api/clients/me').subscribe(p => {
-      this.form = this.fb.nonNullable.group({
+      this.form.set(this.fb.nonNullable.group({
         nom:       [p.nom,             Validators.required],
         prenom:    [p.prenom,          Validators.required],
         telephone: [p.telephone ?? ''],
-      });
+      }));
     });
   }
 
   save(): void {
-    if (!this.form || this.form.invalid) return;
-    this.http.put('/api/clients/me', this.form.getRawValue()).subscribe(() => {
+    const f = this.form();
+    if (!f || f.invalid) return;
+    this.http.put('/api/clients/me', f.getRawValue()).subscribe(() => {
       this.ok.set(true);
       setTimeout(() => this.ok.set(false), 2000);
     });
