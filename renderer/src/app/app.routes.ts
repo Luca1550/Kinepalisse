@@ -1,8 +1,5 @@
 import { Routes } from '@angular/router';
-import { inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { roleGuard } from './core/auth/role.guard';
-import { AuthService } from './core/auth/auth.service';
 
 export const routes: Routes = [
   {
@@ -63,19 +60,17 @@ export const routes: Routes = [
   },
   {
     path: 'reservation/:idSeance',
-    canActivate: [() => inject(AuthService).user() != null
-      ? true
-      : inject(Router).createUrlTree(['/auth/login'])],
+    canActivate: [roleGuard('Client')],
     loadComponent: () => import('./features/reservation/tunnel').then(m => m.TunnelComponent)
   },
   {
     path: 'guichet',
-    canActivate: [roleGuard('Guichetier')],
+    canActivate: [roleGuard('Guichetier', 'Admin')],
     loadComponent: () => import('./features/guichet/guichet').then(m => m.GuichetComponent)
   },
   {
     path: 'compte',
-    canActivate: [() => inject(AuthService).hasRole('Client') ? true : inject(Router).createUrlTree(['/auth/login'])],
+    canActivate: [roleGuard('Client')],
     loadComponent: () => import('./features/compte/compte-layout').then(m => m.CompteLayoutComponent),
     children: [
       { path: '', redirectTo: 'profil', pathMatch: 'full' },
