@@ -1,0 +1,26 @@
+.cartes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.carte {
+  border: 1px solid #ddd;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  border-radius: 6px;
+}
+
+.carte h4 {
+  margin: 0 0 0.5rem;
+  color: #666;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.carte p {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+}

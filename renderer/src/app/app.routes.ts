@@ -22,9 +22,44 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/register').then(m => m.RegisterComponent)
   },
   {
-    path: 'admin/planning',
+    path: 'admin',
     canActivate: [roleGuard('Admin')],
-    loadComponent: () => import('./features/admin/planning').then(m => m.PlanningComponent)
+    loadComponent: () => import('./features/admin/admin-layout').then(m => m.AdminLayoutComponent),
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/admin/dashboard').then(m => m.DashboardComponent)
+      },
+      {
+        path: 'films',
+        loadComponent: () => import('./features/admin/films-admin').then(m => m.FilmsAdminComponent)
+      },
+      {
+        path: 'acteurs',
+        loadComponent: () => import('./features/admin/acteurs-admin').then(m => m.ActeursAdminComponent)
+      },
+      {
+        path: 'realisateurs',
+        loadComponent: () => import('./features/admin/realisateurs-admin').then(m => m.RealisateursAdminComponent)
+      },
+      {
+        path: 'genres',
+        loadComponent: () => import('./features/admin/genres-admin').then(m => m.GenresAdminComponent)
+      },
+      {
+        path: 'salles',
+        loadComponent: () => import('./features/admin/salles-admin').then(m => m.SallesAdminComponent)
+      },
+      {
+        path: 'tarifs',
+        loadComponent: () => import('./features/admin/tarifs-admin').then(m => m.TarifsAdminComponent)
+      },
+      {
+        path: 'planning',
+        loadComponent: () => import('./features/admin/planning').then(m => m.PlanningComponent)
+      },
+    ]
   },
   {
     path: 'reservation/:idSeance',

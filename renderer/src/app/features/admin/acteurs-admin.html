@@ -1,0 +1,39 @@
+<h2>Acteurs</h2>
+<button (click)="toggleForm()">{{ showForm() ? 'Annuler' : '+ Nouvel acteur' }}</button>
+
+@if (showForm()) {
+  <form [formGroup]="form" (ngSubmit)="creer()">
+    <label>Nom *
+      <input formControlName="nom" placeholder="Nom" />
+    </label>
+    <label>Prénom *
+      <input formControlName="prenom" placeholder="Prénom" />
+    </label>
+    <label>Date de naissance
+      <input formControlName="dateNaissance" type="date" />
+    </label>
+    <button type="submit" [disabled]="form.invalid">Créer</button>
+  </form>
+}
+
+@if (message()) {
+  <p [style.color]="erreur() ? 'red' : 'green'">{{ message() }}</p>
+}
+
+<table>
+  <thead>
+    <tr><th>Nom</th><th>Prénom</th><th>Naissance</th><th></th></tr>
+  </thead>
+  <tbody>
+    @for (a of acteurs(); track a.idActeur) {
+      <tr>
+        <td>{{ a.nom }}</td>
+        <td>{{ a.prenom }}</td>
+        <td>{{ a.dateNaissance ?? '—' }}</td>
+        <td><button (click)="supprimer(a.idActeur)">Supprimer</button></td>
+      </tr>
+    } @empty {
+      <tr><td colspan="4">Aucun acteur.</td></tr>
+    }
+  </tbody>
+</table>

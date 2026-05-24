@@ -1,0 +1,35 @@
+<h2>Tarifs</h2>
+<button (click)="toggleForm()">{{ showForm() ? 'Annuler' : '+ Nouveau tarif' }}</button>
+
+@if (showForm()) {
+  <form [formGroup]="form" (ngSubmit)="creer()">
+    <label>Type de tarif *
+      <input formControlName="typeTarif" placeholder="Ex : Plein tarif, Étudiant…" />
+    </label>
+    <label>Prix (€) *
+      <input formControlName="prix" type="number" min="0" step="0.01" />
+    </label>
+    <button type="submit" [disabled]="form.invalid">Créer</button>
+  </form>
+}
+
+@if (message()) {
+  <p [style.color]="erreur() ? 'red' : 'green'">{{ message() }}</p>
+}
+
+<table>
+  <thead>
+    <tr><th>Type</th><th>Prix</th><th></th></tr>
+  </thead>
+  <tbody>
+    @for (t of tarifs(); track t.idTarif) {
+      <tr>
+        <td>{{ t.typeTarif }}</td>
+        <td>{{ t.prix }} €</td>
+        <td><button (click)="supprimer(t.idTarif)">Supprimer</button></td>
+      </tr>
+    } @empty {
+      <tr><td colspan="3">Aucun tarif.</td></tr>
+    }
+  </tbody>
+</table>

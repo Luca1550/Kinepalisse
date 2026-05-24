@@ -1,0 +1,23 @@
+<h2>Dashboard</h2>
+@if (data(); as d) {
+  <div class="cartes">
+    <div class="carte">
+      <h4>Films</h4>
+      <p>{{ d.nbFilms }}</p>
+    </div>
+    <div class="carte">
+      <h4>Séances à venir</h4>
+      <p>{{ d.nbSeancesAVenir }}</p>
+    </div>
+    <div class="carte">
+      <h4>Réservations du jour</h4>
+      <p>{{ d.nbReservationsJour }}</p>
+    </div>
+    <div class="carte">
+      <h4>Taux de remplissage moyen</h4>
+      <p>{{ d.tauxRemplissage }}%</p>
+    </div>
+  </div>
+} @else {
+  <p>Chargement…</p>
+}

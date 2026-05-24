@@ -1,0 +1,32 @@
+:host {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.admin-sidebar h3 {
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+}
+
+.admin-sidebar a {
+  display: block;
+  padding: 0.4rem 0.6rem;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 4px;
+  margin-bottom: 2px;
+}
+
+.admin-sidebar a.active {
+  background: #eee;
+  font-weight: bold;
+}
+
+.admin-sidebar a:hover:not(.active) {
+  background: #f5f5f5;
+}

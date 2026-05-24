@@ -1,0 +1,35 @@
+<h2>Salles</h2>
+<button (click)="toggleForm()">{{ showForm() ? 'Annuler' : '+ Nouvelle salle' }}</button>
+
+@if (showForm()) {
+  <form [formGroup]="form" (ngSubmit)="creer()">
+    <label>Nom de la salle *
+      <input formControlName="nom" placeholder="Ex : Salle Lumière" />
+    </label>
+    <label>Capacité *
+      <input formControlName="capacite" type="number" min="1" />
+    </label>
+    <button type="submit" [disabled]="form.invalid">Créer</button>
+  </form>
+}
+
+@if (message()) {
+  <p [style.color]="erreur() ? 'red' : 'green'">{{ message() }}</p>
+}
+
+<table>
+  <thead>
+    <tr><th>Salle</th><th>Capacité</th><th></th></tr>
+  </thead>
+  <tbody>
+    @for (s of salles(); track s.idSalle) {
+      <tr>
+        <td>{{ s.nomSalle }}</td>
+        <td>{{ s.capacite }} places</td>
+        <td><button (click)="supprimer(s.idSalle)">Supprimer</button></td>
+      </tr>
+    } @empty {
+      <tr><td colspan="3">Aucune salle.</td></tr>
+    }
+  </tbody>
+</table>

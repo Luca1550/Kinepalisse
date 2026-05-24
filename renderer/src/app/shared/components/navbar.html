@@ -5,7 +5,7 @@
       <a routerLink="/compte">Mon compte</a>
     }
     @if (u.role === 'Admin') {
-      <a routerLink="/admin/planning">Planning</a>
+      <a routerLink="/admin">Back-office</a>
     }
     <span>Connecté : {{ u.email }} ({{ u.role }})</span>
     <button (click)="auth.logout()">Déconnexion</button>

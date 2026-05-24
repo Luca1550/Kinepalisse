@@ -1,0 +1,39 @@
+<h2>Réalisateurs</h2>
+<button (click)="toggleForm()">{{ showForm() ? 'Annuler' : '+ Nouveau réalisateur' }}</button>
+
+@if (showForm()) {
+  <form [formGroup]="form" (ngSubmit)="creer()">
+    <label>Nom *
+      <input formControlName="nom" placeholder="Nom" />
+    </label>
+    <label>Prénom *
+      <input formControlName="prenom" placeholder="Prénom" />
+    </label>
+    <label>Date de naissance
+      <input formControlName="dateNaissance" type="date" />
+    </label>
+    <button type="submit" [disabled]="form.invalid">Créer</button>
+  </form>
+}
+
+@if (message()) {
+  <p [style.color]="erreur() ? 'red' : 'green'">{{ message() }}</p>
+}
+
+<table>
+  <thead>
+    <tr><th>Nom</th><th>Prénom</th><th>Naissance</th><th></th></tr>
+  </thead>
+  <tbody>
+    @for (r of realisateurs(); track r.idRealisateur) {
+      <tr>
+        <td>{{ r.nom }}</td>
+        <td>{{ r.prenom }}</td>
+        <td>{{ r.dateNaissance ?? '—' }}</td>
+        <td><button (click)="supprimer(r.idRealisateur)">Supprimer</button></td>
+      </tr>
+    } @empty {
+      <tr><td colspan="4">Aucun réalisateur.</td></tr>
+    }
+  </tbody>
+</table>

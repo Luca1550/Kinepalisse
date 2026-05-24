@@ -1,0 +1,66 @@
+<h2>Films</h2>
+<button (click)="toggleForm()">{{ showForm() ? 'Annuler' : '+ Nouveau film' }}</button>
+
+@if (showForm()) {
+  <form [formGroup]="form" (ngSubmit)="creer()">
+    <label>Titre *
+      <input formControlName="titre" placeholder="Titre" />
+    </label>
+    <label>Durée (min) *
+      <input formControlName="duree" type="number" min="1" />
+    </label>
+    <label>Date de sortie
+      <input formControlName="dateSortie" type="date" />
+    </label>
+    <label>Synopsis
+      <textarea formControlName="synopsis" rows="3"></textarea>
+    </label>
+    <label>URL affiche
+      <input formControlName="afficheUrl" placeholder="https://..." />
+    </label>
+    <label>Réalisateur
+      <select formControlName="idRealisateur">
+        <option [value]="0">— Aucun —</option>
+        @for (r of realisateurs(); track r.idRealisateur) {
+          <option [value]="r.idRealisateur">{{ r.prenom }} {{ r.nom }}</option>
+        }
+      </select>
+    </label>
+    <label>Genres (Ctrl+clic pour multi-sélection)
+      <select multiple size="5" (change)="onGenreChange($event)">
+        @for (g of genres(); track g.idGenre) {
+          <option [value]="g.idGenre">{{ g.nomGenre }}</option>
+        }
+      </select>
+    </label>
+    <label>Acteurs (Ctrl+clic pour multi-sélection)
+      <select multiple size="5" (change)="onActeurChange($event)">
+        @for (a of acteurs(); track a.idActeur) {
+          <option [value]="a.idActeur">{{ a.prenom }} {{ a.nom }}</option>
+        }
+      </select>
+    </label>
+    <button type="submit" [disabled]="form.invalid">Créer</button>
+  </form>
+}
+
+@if (message()) {
+  <p [style.color]="erreur() ? 'red' : 'green'">{{ message() }}</p>
+}
+
+<table>
+  <thead>
+    <tr><th>Titre</th><th>Durée</th><th></th></tr>
+  </thead>
+  <tbody>
+    @for (f of films(); track f.idFilm) {
+      <tr>
+        <td>{{ f.titre }}</td>
+        <td>{{ f.duree }} min</td>
+        <td><button (click)="supprimer(f.idFilm)">Supprimer</button></td>
+      </tr>
+    } @empty {
+      <tr><td colspan="3">Aucun film.</td></tr>
+    }
+  </tbody>
+</table>
