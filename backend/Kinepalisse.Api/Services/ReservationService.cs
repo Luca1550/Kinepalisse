@@ -15,7 +15,28 @@ public class ReservationService
         int idClient, int idSeance, int nbPlaces)
     {
         using var conn = (MySqlConnection)await _db.CreateOpenConnectionAsync();
+        return await ReserverInterneAsync(conn, idClient, idSeance, nbPlaces, "CarteEnLigne");
+    }
 
+    public async Task<(int idReservation, decimal montant)> ReserverGuichetAsync(
+        int idSeance, int nbPlaces, string modePaiement)
+    {
+        if (modePaiement != "Especes" && modePaiement != "Bancontact")
+            throw new Exception("Mode de paiement invalide.");
+
+        using var conn = (MySqlConnection)await _db.CreateOpenConnectionAsync();
+
+        var idClient = await conn.ExecuteScalarAsync<int?>(
+            "SELECT id_client FROM Client WHERE nom = 'Guichet' AND prenom = 'Generique'");
+        if (idClient == null)
+            throw new Exception("Client générique introuvable. Lance POST /api/dev/seed-users.");
+
+        return await ReserverInterneAsync(conn, idClient.Value, idSeance, nbPlaces, modePaiement);
+    }
+
+    private async Task<(int idReservation, decimal montant)> ReserverInterneAsync(
+        MySqlConnection conn, int idClient, int idSeance, int nbPlaces, string modePaiement)
+    {
         // 1. Récupérer infos séance + tarif + capacité en UNE requête
         var info = await conn.QuerySingleOrDefaultAsync<SeanceInfo>(@"
             SELECT s.date_heure AS DateHeure,
@@ -57,8 +78,8 @@ public class ReservationService
 
             await conn.ExecuteAsync(@"
                 INSERT INTO Paiement (id_reservation, montant, mode_paiement, statut, date_paiement)
-                VALUES (@idResa, @montant, 'CarteEnLigne', 'Paye', UTC_TIMESTAMP());",
-                new { idResa, montant },
+                VALUES (@idResa, @montant, @modePaiement, 'Paye', UTC_TIMESTAMP());",
+                new { idResa, montant, modePaiement },
                 transaction: tx);
 
             await tx.CommitAsync();

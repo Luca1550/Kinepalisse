@@ -13,7 +13,7 @@ public class SeanceService
     public SeanceService(DbConnectionFactory db) => _db = db;
 
     private record SeanceAvecDuree(int IdSeance, DateTime DateHeure, int Duree);
-    private record DispoRow(int Capacite, int DejaReserve);
+    private record DispoRow(int Capacite, decimal DejaReserve);
 
     public async Task<int> PlanifierAsync(int idFilm, int idSalle, int idTarif, DateTime dateHeure)
     {
@@ -86,6 +86,21 @@ public class SeanceService
             dejaReserve = row.DejaReserve,
             restant     = row.Capacite - row.DejaReserve
         };
+    }
+
+    public async Task<IEnumerable<SeanceProcheDto>> ListerProchesAsync()
+    {
+        using var conn = await _db.CreateOpenConnectionAsync();
+        return await conn.QueryAsync<SeanceProcheDto>(@"
+            SELECT s.id_seance AS IdSeance, s.date_heure AS DateHeure,
+                   f.titre AS FilmTitre, sa.nom_salle AS NomSalle, t.prix AS Prix
+            FROM Seance s
+            JOIN Film f  ON f.id_film  = s.id_film
+            JOIN Salle sa ON sa.id_salle = s.id_salle
+            JOIN Tarif t  ON t.id_tarif  = s.id_tarif
+            WHERE s.date_heure > UTC_TIMESTAMP()
+              AND s.date_heure < DATE_ADD(UTC_TIMESTAMP(), INTERVAL 24 HOUR)
+            ORDER BY s.date_heure");
     }
 
     public async Task<IEnumerable<SeanceDuFilmDto>> ListerParFilmAsync(int idFilm)

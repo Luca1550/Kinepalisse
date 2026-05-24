@@ -33,6 +33,21 @@ public class ReservationsController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Guichetier,Admin")]
+    [HttpPost("guichet")]
+    public async Task<IActionResult> ReserverGuichet([FromBody] ReserverGuichetDto dto)
+    {
+        try
+        {
+            var (id, montant) = await _service.ReserverGuichetAsync(dto.IdSeance, dto.NbPlaces, dto.ModePaiement);
+            return Ok(new { idReservation = id, montant });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
     [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Annuler(int id)
@@ -53,3 +68,4 @@ public class ReservationsController : ControllerBase
 }
 
 public record ReserverDto(int IdSeance, [Range(1, 10)] int NbPlaces);
+public record ReserverGuichetDto(int IdSeance, [Range(1, 10)] int NbPlaces, string ModePaiement);

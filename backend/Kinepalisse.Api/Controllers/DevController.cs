@@ -31,8 +31,20 @@ public class DevController : ControllerBase
 
         await EnsureUser("admin@kine.be",   "Admin");
         await EnsureUser("guichet@kine.be", "Guichetier");
+
+        // Client générique utilisé pour les ventes au guichet (pas de compte utilisateur)
+        var existeGen = await conn.ExecuteScalarAsync<int>(
+            "SELECT COUNT(*) FROM Client WHERE nom = 'Guichet' AND prenom = 'Generique'");
+        if (existeGen == 0)
+        {
+            await conn.ExecuteAsync(@"
+                INSERT INTO Client (nom, prenom, email, id_utilisateur)
+                VALUES ('Guichet', 'Generique', NULL, NULL)");
+        }
+
         return Ok(new { admin   = "admin@kine.be / admin123",
-                        guichet = "guichet@kine.be / admin123" });
+                        guichet = "guichet@kine.be / admin123",
+                        clientGenerique = "créé si absent" });
     }
 }
 #endif

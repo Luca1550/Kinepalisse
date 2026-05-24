@@ -69,6 +69,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/reservation/tunnel').then(m => m.TunnelComponent)
   },
   {
+    path: 'guichet',
+    canActivate: [roleGuard('Guichetier')],
+    loadComponent: () => import('./features/guichet/guichet').then(m => m.GuichetComponent)
+  },
+  {
     path: 'compte',
     canActivate: [() => inject(AuthService).hasRole('Client') ? true : inject(Router).createUrlTree(['/auth/login'])],
     loadComponent: () => import('./features/compte/compte-layout').then(m => m.CompteLayoutComponent),

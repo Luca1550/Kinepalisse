@@ -1,0 +1,138 @@
+.guichet-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 1rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h1 {
+  grid-column: 1 / -1;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.seances-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.seance-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 0.4rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.seance-item:hover {
+  background: #f0f4ff;
+}
+
+.seance-item.selected {
+  background: #dce8ff;
+  border-color: #3b6fd4;
+}
+
+.heure {
+  font-weight: bold;
+  min-width: 3rem;
+}
+
+.titre {
+  flex: 1;
+}
+
+.salle {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.prix {
+  min-width: 4rem;
+  text-align: right;
+  font-weight: bold;
+}
+
+.empty {
+  color: #888;
+  font-style: italic;
+}
+
+.seance-recap {
+  background: #f8f9fa;
+  border-radius: 4px;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.seance-recap p {
+  margin: 0.2rem 0;
+}
+
+.vente-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.vente-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-weight: 500;
+}
+
+.vente-form input,
+.vente-form select {
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.vente-form button {
+  padding: 0.6rem 1.2rem;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.vente-form button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+.erreur {
+  color: #c62828;
+  margin-top: 0.5rem;
+}
+
+.confirmation {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background: #e8f5e9;
+  border-left: 4px solid #2e7d32;
+  border-radius: 4px;
+}
+
+.confirmation p {
+  margin: 0.2rem 0;
+}
+
+.hint {
+  color: #888;
+  font-style: italic;
+  margin-top: 2rem;
+}

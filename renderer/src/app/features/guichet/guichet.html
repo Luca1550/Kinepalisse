@@ -1,0 +1,60 @@
+<div class="guichet-layout">
+  <section class="seances-panel">
+    <h1>Interface Guichet</h1>
+    <h2>Séances dans les 24h</h2>
+    <ul class="seances-list">
+      @for (s of seances(); track s.idSeance) {
+        <li
+          class="seance-item"
+          [class.selected]="seanceChoisie()?.idSeance === s.idSeance"
+          (click)="selectionner(s)">
+          <span class="heure">{{ s.dateHeure | date:'HH:mm' }}</span>
+          <span class="titre">{{ s.filmTitre }}</span>
+          <span class="salle">{{ s.nomSalle }}</span>
+          <span class="prix">{{ s.prix | number:'1.2-2' }}€</span>
+        </li>
+      } @empty {
+        <li class="empty">Aucune séance dans les 24h.</li>
+      }
+    </ul>
+  </section>
+
+  <section class="vente-panel">
+    @if (seanceChoisie(); as s) {
+      <h2>Vente</h2>
+      <div class="seance-recap">
+        <p><strong>{{ s.filmTitre }}</strong></p>
+        <p>{{ s.dateHeure | date:'EEEE d MMMM, HH:mm' : '' : 'fr' }} — {{ s.nomSalle }}</p>
+        <p>Tarif : {{ s.prix | number:'1.2-2' }}€ / place</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="vendre()" class="vente-form">
+        <label>
+          Nombre de places
+          <input type="number" min="1" max="10" formControlName="nbPlaces" />
+        </label>
+        <label>
+          Mode de paiement
+          <select formControlName="modePaiement">
+            <option value="Especes">Espèces</option>
+            <option value="Bancontact">Bancontact</option>
+          </select>
+        </label>
+        <button type="submit" [disabled]="form.invalid">Encaisser</button>
+      </form>
+
+      @if (erreur()) {
+        <p class="erreur">{{ erreur() }}</p>
+      }
+
+      @if (recap(); as r) {
+        <div class="confirmation">
+          <p>✓ Réservation <strong>#{{ r.idReservation }}</strong> confirmée</p>
+          <p>Montant encaissé : <strong>{{ r.montant | number:'1.2-2' }}€</strong></p>
+        </div>
+      }
+    } @else {
+      <p class="hint">← Sélectionnez une séance pour démarrer la vente.</p>
+    }
+  </section>
+</div>

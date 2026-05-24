@@ -26,6 +26,14 @@ public class SeancesController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Guichetier,Admin")]
+    [HttpGet("proches")]
+    public async Task<IActionResult> Proches()
+    {
+        var seances = await _service.ListerProchesAsync();
+        return Ok(seances);
+    }
+
     [HttpGet("{id}/disponibilite")]
     public async Task<IActionResult> Disponibilite(int id)
     {

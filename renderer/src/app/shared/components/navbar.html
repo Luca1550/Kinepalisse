@@ -4,6 +4,9 @@
     @if (u.role === 'Client') {
       <a routerLink="/compte">Mon compte</a>
     }
+    @if (u.role === 'Guichetier') {
+      <a routerLink="/guichet">Guichet</a>
+    }
     @if (u.role === 'Admin') {
       <a routerLink="/admin">Back-office</a>
     }
