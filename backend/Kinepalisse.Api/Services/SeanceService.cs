@@ -8,7 +8,6 @@ namespace Kinepalisse.Api.Services;
 public class SeanceService
 {
     private readonly DbConnectionFactory _db;
-    private static readonly TimeSpan NETTOYAGE = TimeSpan.FromMinutes(30);
 
     public SeanceService(DbConnectionFactory db) => _db = db;
 
@@ -25,12 +24,9 @@ public class SeanceService
             new { idFilm });
         if (duree == null) throw new Exception("Film introuvable.");
 
-        // 2. Fenêtre occupée par la NOUVELLE séance
-        DateTime debutNouvelle = dateHeure;
-        DateTime finNouvelle   = debutNouvelle.AddMinutes(duree.Value).Add(NETTOYAGE);
-
-        // 3. Séances existantes dans cette salle, autour du créneau (filtre J±1).
+        // 2. Séances existantes dans cette salle, autour du créneau (filtre J±1).
         //    L'index (id_salle, date_heure) de Seance accélère cette requête.
+        DateTime finNouvelle = dateHeure.AddMinutes(duree.Value).Add(ConflitDetector.NETTOYAGE);
         var existantes = await conn.QueryAsync<SeanceAvecDuree>(@"
             SELECT s.id_seance AS IdSeance, s.date_heure AS DateHeure, f.duree AS Duree
             FROM Seance s
@@ -41,19 +37,14 @@ public class SeanceService
             new
             {
                 idSalle,
-                borneInf = debutNouvelle.AddDays(-1),
+                borneInf = dateHeure.AddDays(-1),
                 borneSup = finNouvelle.AddDays(1)
             });
 
-        // 4. Formule du chevauchement : A < D ET C < B
-        foreach (var s in existantes)
-        {
-            DateTime debutS = s.DateHeure;
-            DateTime finS   = s.DateHeure.AddMinutes(s.Duree).Add(NETTOYAGE);
-
-            if (debutNouvelle < finS && debutS < finNouvelle)
-                throw new Exception("La salle est déjà occupée sur ce créneau.");
-        }
+        // 3. Détection de conflit (logique pure, testable sans BDD)
+        var creneaux = existantes.Select(s => new ConflitDetector.CreneauExistant(s.DateHeure, s.Duree));
+        if (ConflitDetector.ExisteConflit(dateHeure, duree.Value, creneaux))
+            throw new Exception("La salle est déjà occupée sur ce créneau.");
 
         // 5. Pas de conflit → on enregistre
         return await conn.ExecuteScalarAsync<int>(@"
